@@ -1,0 +1,69 @@
+local function safeLoadstring(url)
+    local success, response = pcall(game.HttpGet, game, url)
+    if success and response then
+        local func, err = loadstring(response)
+        if func then
+            return func()
+        else
+            warn("Error loading script from " .. url .. ": " .. tostring(err))
+        end
+    else
+        warn("Failed to fetch script from " .. url)
+    end
+end
+
+local Fluent = safeLoadstring("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua")
+local SaveManager = safeLoadstring("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua")
+local InterfaceManager = safeLoadstring("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua")
+
+if not Fluent then
+    error("Fluent UI failed to load. Check the URL or your internet connection.")
+end
+
+local Window = Fluent:CreateWindow({
+    Title = "ducky Multi-Script Hub",
+    SubTitle = "Powered by Fluent UI",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true,        
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+}
+
+local scripts = {
+    {Title = "NATIVE SCRIPT FISCH", URL = "https://raw.githubusercontent.com/Native-lab/Native/main/loader.lua"},
+    {Title = "Fischer Script", URL = "https://api.luarmor.net/files/v3/loaders/5321d9654d1283ac2ba85beaa0c10ab5.lua"},
+    {Title = "Ronix Hub [NEW!]", URL = "https://api.luarmor.net/files/v3/loaders/1255807d4f3b118b6636cfd3d386d8b8.lua"},
+    {Title = "Lunor Hub [NEW!]", URL = "https://api.luarmor.net/files/v3/loaders/f6c9f276f7d6a7dd6edfd0173d7a211d.lua"},
+    {Title = "Draco Hub [NEW!]", URL = "https://api.luarmor.net/files/v3/loaders/cdc8ffd74b2c33f6c9f47b85f4b77c45.lua"}
+}
+
+for _, script in ipairs(scripts) do
+    Tabs.Main:AddButton({
+        Title = script.Title,
+        Callback = function()
+            safeLoadstring(script.URL)
+        end
+    })
+end
+
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/SpecificGame")
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings
+
+Fluent:Notify({
+    Title = "Fisch Multi-Script Hub",
+    Content = "Loaded successfully!",
+    Duration = 6
+})
+
+Window:SelectTab(1)
